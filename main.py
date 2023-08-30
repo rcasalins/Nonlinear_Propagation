@@ -2,6 +2,7 @@ import numpy as np
 import numpy.fft as fft
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 # Temporal Sampling
 
