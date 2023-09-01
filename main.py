@@ -1,8 +1,8 @@
 import numpy as np
+import math
 import numpy.fft as fft
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 
 # Temporal Sampling
 
@@ -58,10 +58,20 @@ gamma = 10  # (2 * np.pi * n2) / (lambda_p * A_eff)
 step_number = 1000  # Number of steps for the Split Step Fourier Method (SSFM)
 dz = device_length / step_number  # Step size
 
+
 # Operators
 
-dispersion_operator = np.exp(1j * (0.5 * betas[0] * (w_vector ** 2) - w_vector) * dz) * np.exp(
-    1j * (1 / 6) * betas[1] * (w_vector ** 3) * dz) * np.exp(-alpha / 2 * dz)  # phase factor of the pump wave
+def dispersion_parameters_series(frequency_vector, dispersions):
+    taylor_expansion = 0
+
+    for m in range(len(dispersions)):
+        aux = dispersions[m] * (1j ** (m + 3) / math.factorial(m + 2)) * ((1j * frequency_vector) ** (m + 2))
+        taylor_expansion = taylor_expansion + aux
+
+    return np.array(taylor_expansion)
+
+
+dispersion_operator = np.exp(dispersion_parameters_series(w_vector, betas) * dz)
 nonlinear_operator = 1j * power * gamma * dz
 
 # Main Loop
